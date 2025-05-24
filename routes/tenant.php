@@ -19,10 +19,17 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Gym/LandingPage'); 
-})->name('home');
+Route::middleware([
+    InitializeTenancyByDomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
 
-Route::get('/dashboard', function (Tenant $tenant) {
-    return "Dashboard do tenant: " . $tenant->id;
-})->name('tenant.dashboard');
+    Route::get('/', function () {
+        return Inertia::render('Gym/LandingPage'); 
+    })->name('home');
+
+    Route::get('/dashboard', function (Tenant $tenant) {
+        return "Dashboard do tenant: " . $tenant->id;
+    })->name('tenant.dashboard');
+
+});
