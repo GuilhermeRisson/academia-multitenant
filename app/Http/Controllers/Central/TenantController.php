@@ -97,7 +97,7 @@ class TenantController extends Controller
             $baseDomain = env('TENANCY_CENTRAL_DOMAIN');
 
             $tenant->domains()->create([
-                'domain' => $validated['domain']. $baseDomain,
+                'domain' => $validated['domain'].'.'.$baseDomain,
             ]);
 
             $this->createTenantDatabase($tenant, $databaseName);

@@ -40,3 +40,12 @@ logs:
 node:
 	docker exec -it node bash
 	npm run dev
+	
+up sem build: 
+	docker-compose up -d
+
+permissão banco de dados: 
+	docker exec -it mysql mysql -u root -p
+	GRANT ALL PRIVILEGES ON `tenant%`.* TO 'laravel'@'%';
+	GRANT DROP ON `tenant%`.* TO 'laravel'@'%';
+	FLUSH PRIVILEGES;
