@@ -82,7 +82,7 @@ class TenantController extends Controller
         try {
             $tenant = new TenantService();
             $tenant->create($validated);
-            
+
             return redirect()
                 ->route('dashboard')
                 ->with('success', 'Academia cadastrada com sucesso!');

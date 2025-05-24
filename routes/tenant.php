@@ -6,6 +6,7 @@ use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Contracts\Tenant;
+use Inertia\Inertia;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -19,8 +20,8 @@ use Stancl\Tenancy\Contracts\Tenant;
 */
 
 Route::get('/', function () {
-    return "Bem-vindo ao tenant: " . tenant('id');
-})->name('tenant.home');
+    return Inertia::render('Gym/LandingPage'); 
+})->name('home');
 
 Route::get('/dashboard', function (Tenant $tenant) {
     return "Dashboard do tenant: " . $tenant->id;
