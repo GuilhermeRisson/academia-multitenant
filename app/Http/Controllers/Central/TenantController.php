@@ -88,6 +88,8 @@ class TenantController extends Controller
                 ->with('success', 'Academia cadastrada com sucesso!');
 
         } catch (\Exception $e) {
+            Log::error('Tenant creation failed at central DB: ' . $e->getMessage());
+            throw $e;
             return back()
                 ->with('error', 'Erro ao cadastrar: ' . $e->getMessage())
                 ->withInput();

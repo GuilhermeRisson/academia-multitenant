@@ -4,12 +4,14 @@ namespace App\Services\Central;
 
 use App\Models\Central\Domain;
 use App\Models\Central\Tenant;
+use App\Models\Tenant\User;
 use App\Models\Tenant\TenantDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Jobs\CreateDatabase;
 use Stancl\Tenancy\Jobs\MigrateDatabase;
+use Illuminate\Support\Facades\Hash;
 
 class TenantService
 {
@@ -61,12 +63,17 @@ class TenantService
                 'postal_code' => $data['postal_code'],
             ]);
 
+            User::create([
+                'email' => $data['email'],
+                'password' => Hash::make('123456'),
+            ]);
+
             tenancy()->end();
 
         } catch (\Throwable $th) {
-            Log::error('Tenant creation failed after DB creation: ' . $e->getMessage());
+            Log::error('Tenant creation failed after DB creation: ' . $th->getMessage());
             $this->cleanupFailedTenant($tenantId, $databaseName);
-            throw $e;
+            throw $th;
         }
 
         return $tenant;
