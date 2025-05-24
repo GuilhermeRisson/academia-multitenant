@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Stancl\Tenancy\Jobs\CreateDatabase;
 use Stancl\Tenancy\Jobs\MigrateDatabase;
-
+use App\Services\Central\TenantService;
 class TenantController extends Controller
 {
     public function index(Request $request)
@@ -78,81 +78,31 @@ class TenantController extends Controller
             'postal_code' => 'required|string|regex:/^\d{5}-\d{3}$/',
         ]);
 
-        $tenantId = (string) Str::uuid();
-        $databaseName = config('tenancy.database.prefix') . $tenantId;
 
         try {
-            $tenant = Tenant::create([
-                'id' => $tenantId,
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'cnpj' => $validated['cnpj'],
-                'street' => $validated['street'],
-                'number' => $validated['number'],
-                'complement' => $validated['complement'],
-                'city' => $validated['city'],
-                'state' => $validated['state'],
-                'postal_code' => $validated['postal_code'],
-            ]);
-            $baseDomain = env('TENANCY_CENTRAL_DOMAIN');
-
-            $tenant->domains()->create([
-                'domain' => $validated['domain'].'.'.$baseDomain,
-            ]);
-
-            $this->createTenantDatabase($tenant, $databaseName);
-
+            $tenant = new TenantService();
+            $tenant->create($validated);
+            
             return redirect()
                 ->route('dashboard')
                 ->with('success', 'Academia cadastrada com sucesso!');
 
         } catch (\Exception $e) {
-
-            Log::error('Tenant creation failed: ' . $e->getMessage(), [
-                'exception' => $e,
-                'tenant_id' => $tenantId ?? null,
-                'request' => $request->all()
-            ]);
-
-            $this->cleanupFailedTenant($tenantId, $databaseName);
-
             return back()
                 ->with('error', 'Erro ao cadastrar: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
-    protected function createTenantDatabase($tenant, $databaseName)
-    {
-        try {
-            // Check if database already exists
-            $exists = DB::connection('mysql')->select(
-                "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", 
-                [$databaseName]
-            );
-
-            if (empty($exists)) {
-                CreateDatabase::dispatchSync($tenant);
-            }
-            
-            MigrateDatabase::dispatchSync($tenant);
-
-        } catch (\Exception $e) {
-            Log::error('Tenant database creation failed: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 
     public function destroy(Tenant $tenant)
     {
         $databaseName = config('tenancy.database.prefix') . $tenant->id;
 
         try {
-            // Delete related records
             $tenant->domains()->delete();
             $tenant->delete();
 
-            // Drop tenant database
             try {
                 DB::statement("DROP DATABASE IF EXISTS `$databaseName`");
             } catch (\Exception $e) {
@@ -173,23 +123,4 @@ class TenantController extends Controller
         }
     }
 
-    protected function cleanupFailedTenant($tenantId, $databaseName)
-    {
-        try {
-            // Delete domain if exists
-            Domain::where('tenant_id', $tenantId)->delete();
-            
-            // Delete tenant if exists
-            Tenant::where('id', $tenantId)->delete();
-            
-            // Try to drop database if exists
-            try {
-                DB::statement("DROP DATABASE IF EXISTS `$databaseName`");
-            } catch (\Exception $e) {
-                Log::error("Failed to drop database during cleanup: " . $e->getMessage());
-            }
-        } catch (\Exception $e) {
-            Log::error("Cleanup failed for tenant {$tenantId}: " . $e->getMessage());
-        }
-    }
 }

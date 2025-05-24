@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
+use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Contracts\Tenant;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -18,11 +18,10 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::get('/', function ($tenant) {
-    return "Bem-vindo ao tenant: " . $tenant;
+Route::get('/', function () {
+    return "Bem-vindo ao tenant: " . tenant('id');
 })->name('tenant.home');
 
-// Adicione aqui todas as rotas específicas dos tenants
-Route::get('/dashboard', function ($tenant) {
-    return "Dashboard do tenant: " . $tenant;
+Route::get('/dashboard', function (Tenant $tenant) {
+    return "Dashboard do tenant: " . $tenant->id;
 })->name('tenant.dashboard');
