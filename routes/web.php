@@ -16,11 +16,9 @@ Route::middleware(['web'])
             Route::get('/', function () {
                 return Inertia::render('Tenants/LandingPage');
             })->name('home');
-            
-            Route::prefix('auth')->group(function () {
-                Route::get('/login', [AuthController::class, 'index'])->name('login');
-                Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
-            });
+        
+            Route::get('/login', [AuthController::class, 'index'])->name('login');
+            Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
         });
 
         Route::middleware('web','auth')->group(function () {

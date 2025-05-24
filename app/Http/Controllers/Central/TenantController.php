@@ -27,9 +27,9 @@ class TenantController extends Controller
         $tenants = $query->get()->map(function ($tenant) {
             return [
                 'id' => $tenant->id,
-                'name' => $tenant->data['name'] ?? 'N/A',
-                'email' => $tenant->data['email'] ?? 'N/A',
-                'domain' => $tenant->domains->first()->domain ?? 'N/A',
+                'name' => $tenant->name,
+                'email' => $tenant->email,
+                'domain' => $tenant->domains->first()->domain,
                 'created_at' => $tenant->created_at->format('d/m/Y H:i')
             ];
         });
@@ -82,28 +82,24 @@ class TenantController extends Controller
         $databaseName = config('tenancy.database.prefix') . $tenantId;
 
         try {
-            // 1. Create tenant record
             $tenant = Tenant::create([
                 'id' => $tenantId,
-                'data' => [
-                    'name' => $validated['name'],
-                    'email' => $validated['email'],
-                    'cnpj' => $validated['cnpj'],
-                    'street' => $validated['street'],
-                    'number' => $validated['number'],
-                    'complement' => $validated['complement'],
-                    'city' => $validated['city'],
-                    'state' => $validated['state'],
-                    'postal_code' => $validated['postal_code'],
-                ],
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'cnpj' => $validated['cnpj'],
+                'street' => $validated['street'],
+                'number' => $validated['number'],
+                'complement' => $validated['complement'],
+                'city' => $validated['city'],
+                'state' => $validated['state'],
+                'postal_code' => $validated['postal_code'],
             ]);
+            $baseDomain = env('TENANCY_CENTRAL_DOMAIN');
 
-            // 2. Create domain record
             $tenant->domains()->create([
-                'domain' => $validated['domain'],
+                'domain' => $validated['domain']. $baseDomain,
             ]);
 
-            // 3. Handle tenant database operations
             $this->createTenantDatabase($tenant, $databaseName);
 
             return redirect()
@@ -111,6 +107,7 @@ class TenantController extends Controller
                 ->with('success', 'Academia cadastrada com sucesso!');
 
         } catch (\Exception $e) {
+
             Log::error('Tenant creation failed: ' . $e->getMessage(), [
                 'exception' => $e,
                 'tenant_id' => $tenantId ?? null,

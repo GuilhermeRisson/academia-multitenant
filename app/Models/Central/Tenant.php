@@ -8,13 +8,21 @@ use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 
 
-
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDomains, HasDatabase;
 
     protected $fillable = [
         'id',
+        'name',
+        'email',
+        'cnpj',
+        'street',
+        'number',
+        'complement',
+        'city',
+        'state',
+        'postal_code',
         'data',
     ];
 
@@ -26,6 +34,15 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     {
         return [
             'id',
+            'name',
+            'email',
+            'cnpj',
+            'street',
+            'number',
+            'complement',
+            'city',
+            'state',
+            'postal_code',
             'data',
         ];
     }
