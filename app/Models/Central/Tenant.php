@@ -2,22 +2,31 @@
 
 namespace App\Models\Central;
 
-use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
+use Stancl\Tenancy\Database\Concerns\HasDomains;
+use Stancl\Tenancy\Contracts\TenantWithDatabase;
+use Stancl\Tenancy\Database\Concerns\HasDatabase;
 
-class Tenant extends Model
+
+
+class Tenant extends BaseTenant implements TenantWithDatabase
 {
-    protected $keyType = 'string';
-    protected $primaryKey = 'id';
-    public $incrementing = false;
+    use HasDomains, HasDatabase;
 
-    protected $fillable = ['id', 'data'];
-
-    protected $casts = [
-        'data' => 'array', // Automatically cast JSON to array
+    protected $fillable = [
+        'id',
+        'data',
     ];
 
-    public function domains()
+    protected $casts = [
+        'data' => 'array',
+    ];
+
+    public static function getCustomColumns(): array
     {
-        return $this->hasMany(Domain::class);
+        return [
+            'id',
+            'data',
+        ];
     }
 }
