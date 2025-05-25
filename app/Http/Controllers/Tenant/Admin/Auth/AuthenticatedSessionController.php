@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tenant\Admin;
+namespace App\Http\Controllers\Tenant\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Services\Tenant\Auth\AuthService;
@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Tenant\TenantDetail;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -23,7 +24,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Admin/Auth/Login');
+        return Inertia::render('Gym/Auth/Login');
     }
 
     /**

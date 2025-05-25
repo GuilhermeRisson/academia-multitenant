@@ -94,10 +94,6 @@ php artisan migrate --seed
 - 🖥️ **Backend (Laravel via Nginx)**  
 👉 [http://academia-multitenant.test:8080](http://academia-multitenant.test:8080)
 
-- 🌐 **Frontend (Vite)**  
-👉 [http://localhost:5173](http://localhost:5173)  
-*(A porta pode mudar, verifique no terminal)*
-
 ---
 
 ## 🗂️ Estrutura dos containers
@@ -107,7 +103,7 @@ php artisan migrate --seed
 | app     | Laravel (PHP-FPM)    | 9000           |
 | mysql   | Banco de Dados MySQL | 3307           |
 | nginx   | Servidor Nginx       | 8080           |
-| node    | Node.js + Vite       | 5173 (ou dinâmica) |
+| node    | Node.js              | 5173 (ou dinâmica) |
 
 ---
 
@@ -141,9 +137,6 @@ docker exec -it node bash
 
 ## ⚠️ Problemas comuns
 
-- 🔥 **Vite não carrega (tela branca ou erro no `/@vite/client`)**  
-Solução: Verifique se o Vite está rodando no container Node (`npm run dev`) e se a porta está correta.
-
 - 🔑 **Erro de permissão no banco ao criar tenants:**  
 É necessário garantir que o usuário `laravel` no MySQL tenha permissões suficientes para criar e excluir bancos. Rode dentro do container mysql:
 
@@ -162,4 +155,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## ✨ Desenvolvido por
 
-**Seu Nome** - [@GuilhermeRisson](https://github.com/GuilhermeRisson)  
+[@GuilhermeRisson](https://github.com/GuilhermeRisson)  

@@ -4,6 +4,7 @@ namespace App\Services\Tenant\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\Tenant\User;
 
 class AuthService
 {

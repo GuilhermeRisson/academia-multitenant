@@ -20,7 +20,6 @@ class TenantService
         $tenantId = (string) Str::uuid();
         $databaseName = config('tenancy.database.prefix') . $tenantId;
 
-
         try {
             $tenant = Tenant::create([
                 'id' => $tenantId,

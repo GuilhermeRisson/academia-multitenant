@@ -17,7 +17,7 @@ import { Head, Link } from '@inertiajs/vue3';
         <Link href="#classes" class="text-indigo-600 hover:text-indigo-800">Aulas</Link>
         <Link href="#plans" class="text-indigo-600 hover:text-indigo-800">Planos</Link>
         <Link href="#contact" class="text-indigo-600 hover:text-indigo-800">Contato</Link>
-        <Link href="/login" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+        <Link href="/admin/login" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
           Área do Membro
         </Link>
       </nav>

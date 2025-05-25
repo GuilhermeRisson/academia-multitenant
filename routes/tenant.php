@@ -7,9 +7,9 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Contracts\Tenant;
 use Inertia\Inertia;
-use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Admin\AlunoController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Tenant\Admin\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Tenant\Admin\Auth\MemberController;
+use App\Http\Controllers\Tenant\Admin\Auth\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -26,6 +26,15 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
+
+    Route::get('/empresa-nao-encontrada', function () {
+        return view('errors.tenant-not-found');
+    })->name('tenant.notfound');
+
+    Route::get('/empresa-desativada', function () {
+        return view('errors.tenant-inactive');
+    })->name('tenant.inactive');
+
 
     Route::get('/', function () {
         return Inertia::render('Gym/LandingPage');
@@ -46,10 +55,9 @@ Route::middleware([
 
         Route::middleware('auth')->group(function () {
 
-            Route::get('/dashboard', [DashboardController::class, 'index'])
-                ->name('dashboard');
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-            Route::resource('alunos', AlunoController::class);
+            Route::resource('alunos', MemberController::class);
             // Isso gera:
             // GET /admin/alunos -> index
             // GET /admin/alunos/create -> create

@@ -1,26 +1,34 @@
 <?php
 
-// app/Http/Middleware/TenancyMiddleware.php
-
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Tenant;
+use App\Models\Central\Tenant;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TenancyMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Extrai o tenant do subdomínio
         $tenantSubdomain = explode('.', $request->getHost())[0];
-        
-        // Busca o tenant no banco de dados
-        $tenant = Tenant::where('subdomain', $tenantSubdomain)->firstOrFail();
-        
-        // Inicializa o tenant (você precisará implementar essa lógica)
+
+        // Busca tenant
+        $tenant = Tenant::where('name', $tenantSubdomain)->first();
+
+        // if (!$tenant) {
+        //     // Se não existe, redireciona para uma página de erro
+        //     return redirect()->route('tenant.notfound');
+        // }
+
+        // if (!$tenant->is_active) {
+        //     // Se está desativado, redireciona para outra página
+        //     return redirect()->route('tenant.inactive');
+        // }
+
+        // Se tudo ok, inicializa o tenant
         tenancy()->initialize($tenant);
-        
+
         return $next($request);
     }
 }
