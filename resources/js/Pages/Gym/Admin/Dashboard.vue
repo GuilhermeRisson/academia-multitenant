@@ -10,6 +10,7 @@ const props = defineProps({
   total_members: Number,
   members_this_month: Number,
   recent_members: Array,
+  monthly_data: Object,
 });
 const chartRef = ref(null);
 
