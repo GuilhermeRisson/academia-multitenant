@@ -3,7 +3,11 @@
 namespace App\Services\Tenant;
 
 use App\Models\Tenant\Member;
+use App\Models\Tenant\TenantDetail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+
 class DashboardService
 {
     public function getData(): array
@@ -35,5 +39,34 @@ class DashboardService
         return [
             'members' => $data,
         ];
+    }
+
+    public function show(): array
+    {
+        $tenantDetails = TenantDetail::all();
+        return [
+            'tenant_details' => $tenantDetails,
+        ];
+    }
+
+    public function saveLogo(TenantDetail $tenant, UploadedFile $logo): string
+    {
+        $path = public_path("logo/{$tenant->id}");
+
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+
+        $filename = 'logo.' . $logo->getClientOriginalExtension();
+
+        $logo->move($path, $filename);
+
+        $logoUrl = url("logo/{$tenant->id}/{$filename}");
+
+        $tenant->update([
+            'logo_url' => $logoUrl
+        ]);
+
+        return $logoUrl;
     }
 }

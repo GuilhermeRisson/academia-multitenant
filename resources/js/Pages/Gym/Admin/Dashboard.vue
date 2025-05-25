@@ -111,6 +111,12 @@ onMounted(() => {
         </div>
         <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
           <Link
+            href="/admin/tenants"
+            class="inline-flex items-center px-4 py-2 bg-white text-indigo-700 font-semibold rounded-lg shadow-md hover:bg-indigo-50 hover:text-indigo-800 transition-all duration-300"
+          >
+            Ver Perfil
+          </Link>
+          <Link
             href="/admin/members"
             class="inline-flex items-center px-4 py-2 bg-white text-indigo-700 font-semibold rounded-lg shadow-md hover:bg-indigo-50 hover:text-indigo-800 transition-all duration-300"
           >

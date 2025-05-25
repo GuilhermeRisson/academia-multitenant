@@ -26,6 +26,7 @@ class CreateTenantsTable extends Migration
             $table->string('city');
             $table->string('state', 2);
             $table->string('postal_code');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->json('data')->nullable();
         });

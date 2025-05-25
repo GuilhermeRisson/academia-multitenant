@@ -18,5 +18,6 @@ class TenantDetail extends Model
         'city',
         'state',
         'postal_code',
+        'logo_url'
     ];
 }

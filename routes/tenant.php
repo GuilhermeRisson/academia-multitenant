@@ -50,6 +50,8 @@ Route::middleware([
         Route::middleware('auth:tenant')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
             Route::resource('members', MemberController::class);
+            Route::get('/tenants', [DashboardController::class, 'show'])->name('tenants.show');
+            Route::post('/tenants/logo', [DashboardController::class, 'updateLogo'])->name('tenants.logo.update');
         });
     });
 });
