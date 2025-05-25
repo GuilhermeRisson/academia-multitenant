@@ -12,14 +12,19 @@ class AuthService
      */
     public function login(array $credentials, bool $remember = false): bool
     {
-        if (Auth::attempt($credentials, $remember)) {
-            // Garante que o redirecionamento mantenha o subdomínio
-            $tenant = Tenant::current();
+        if (Auth::guard('tenant')->attempt($credentials, $remember)) {
+            session()->regenerate();
+
+            // Captura o tenant atual (assegure que isso funciona no contexto)
+            $tenant = app(\Stancl\Tenancy\Tenancy::class)->tenant;
+
             if ($tenant) {
                 session(['tenant_domain' => $tenant->domain]);
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -28,7 +33,7 @@ class AuthService
      */
     public function logout(): void
     {
-        Auth::logout();
+        Auth::guard('tenant')->logout();
 
         session()->invalidate();
         session()->regenerateToken();

@@ -5,29 +5,41 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Models\Central\Tenant;
+use Stancl\Tenancy\Tenancy;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TenancyMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $tenantSubdomain = explode('.', $request->getHost())[0];
+        // Protege domínio principal
+        $centralDomains = ['central.seudominio.com', 'localhost', '127.0.0.1'];
+        if (in_array($request->getHost(), $centralDomains)) {
+            return $next($request);
+        }
+
+        // Extrai subdomínio
+        $hostParts = explode('.', $request->getHost());
+
+        if (count($hostParts) < 3) {
+            throw new NotFoundHttpException('Tenant inválido ou domínio mal formatado');
+        }
+
+        $tenantSubdomain = $hostParts[0];
 
         // Busca tenant
         $tenant = Tenant::where('name', $tenantSubdomain)->first();
 
-        // if (!$tenant) {
-        //     // Se não existe, redireciona para uma página de erro
-        //     return redirect()->route('tenant.notfound');
-        // }
+        if (!$tenant) {
+            throw new NotFoundHttpException('Tenant não encontrado');
+        }
 
         // if (!$tenant->is_active) {
-        //     // Se está desativado, redireciona para outra página
-        //     return redirect()->route('tenant.inactive');
+        //     return response()->view('errors.tenant-inactive', [], 403);
         // }
 
-        // Se tudo ok, inicializa o tenant
-        tenancy()->initialize($tenant);
+        // Inicializa tenancy
+        app(Tenancy::class)->initialize($tenant);
 
         return $next($request);
     }

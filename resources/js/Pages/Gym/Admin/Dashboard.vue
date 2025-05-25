@@ -5,12 +5,14 @@ defineProps({
   total_members: Number,
   members_this_month: Number,
   recent_members: Array,
+  tenant_details: Array,
 });
 </script>
 
 <template>
   <Head title="Dashboard - Tenant" />
 
+  {{ tenant_details }}
   <div class="min-h-screen bg-gray-50 p-6">
     <div class="max-w-7xl mx-auto">
       <h1 class="text-3xl font-bold text-gray-900 mb-6">Dashboard da Unidade</h1>
@@ -46,7 +48,7 @@ defineProps({
                 {{ new Date(member.created_at).toLocaleDateString('pt-BR') }}
               </td>
             </tr>
-            <tr v-if="!recent_members.length">
+            <tr v-if="!recent_members">
               <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">Nenhum membro recente.</td>
             </tr>
           </tbody>

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Contracts\Tenant;
 use Inertia\Inertia;
 use App\Http\Controllers\Tenant\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Tenant\Admin\MemberController;
@@ -27,42 +26,30 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
 
-    Route::get('/empresa-nao-encontrada', function () {
-        return view('errors.tenant-not-found');
-    })->name('tenant.notfound');
+    // Páginas de erro específicas do tenant
+    Route::view('/empresa-nao-encontrada', 'errors.tenant-not-found')->name('tenant.notfound');
+    Route::view('/empresa-desativada', 'errors.tenant-inactive')->name('tenant.inactive');
 
-    Route::get('/empresa-desativada', function () {
-        return view('errors.tenant-inactive');
-    })->name('tenant.inactive');
+    // Landing page
+    Route::get('/', fn() => Inertia::render('Gym/LandingPage'))->name('home');
 
+    // Rotas administrativas
+    Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/', function () {
-        return Inertia::render('Gym/LandingPage');
-    })->name('home');
+        // Autenticação
+        Route::middleware('guest:tenant')->group(function () {
+            Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+            Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+        });
 
-    Route::middleware(['tenant'])->group(function () {
-        Route::prefix('admin')->name('admin.')->group(function () {
+        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+            ->middleware('auth:tenant')
+            ->name('logout');
 
-            Route::get('/login', [AuthenticatedSessionController::class, 'create'])
-                ->middleware('guest')
-                ->name('login');
-
-            Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-                ->middleware('guest');
-
-            Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-                ->middleware('auth')
-                ->name('logout');
-
-            Route::middleware('auth')->group(function () {
-
-                Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-                Route::resource('alunos', MemberController::class);
-
-            });
-
+        // Rotas protegidas
+        Route::middleware('auth:tenant')->group(function () {
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::resource('members', MemberController::class);
         });
     });
-
 });

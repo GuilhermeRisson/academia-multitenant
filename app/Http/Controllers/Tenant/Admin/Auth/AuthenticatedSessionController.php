@@ -33,8 +33,7 @@ class AuthenticatedSessionController extends Controller
         $remember = $request->boolean('remember');
 
         if ($this->authService->login($credentials, $remember)) {
-            $tenantDomain = session('tenant_domain', $request->getHost());
-            return redirect()->to("http://{$tenantDomain}/admin/dashboard");
+            return redirect()->to(url('admin/dashboard'));
         }
 
         throw ValidationException::withMessages([
