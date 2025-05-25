@@ -155,4 +155,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## ✨ Desenvolvido por
 
-**Seu Nome** - [@GuilhermeRisson](https://github.com/GuilhermeRisson)  
+[@GuilhermeRisson](https://github.com/GuilhermeRisson)  
