@@ -50,20 +50,20 @@ const goToPage = (url) => {
             Visualize e gerencie os membros cadastrados
           </p>
         </div>
-        <div>
+
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
           <Link href="/admin/dashboard"
             class="inline-flex items-center px-4 py-2 bg-white text-indigo-700 font-semibold rounded-lg shadow-md hover:bg-indigo-50 hover:text-indigo-800 transition-all duration-300"
           >
             Dashboard
           </Link>
-        </div>
-        <div>
           <Link href="/admin/members/create"
             class="inline-flex items-center px-4 py-2 bg-white text-indigo-700 font-semibold rounded-lg shadow-md hover:bg-indigo-50 hover:text-indigo-800 transition-all duration-300"
           >
             Novo Membro
           </Link>
         </div>
+
       </div>
     </header>
 
