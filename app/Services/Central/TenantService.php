@@ -21,6 +21,8 @@ class TenantService
         $databaseName = config('tenancy.database.prefix') . $tenantId;
 
         try {
+            DB::beginTransaction();
+
             $tenant = Tenant::create([
                 'id' => $tenantId,
                 'name' => $data['name'],
@@ -28,7 +30,7 @@ class TenantService
                 'cnpj' => $data['cnpj'],
                 'street' => $data['street'],
                 'number' => $data['number'],
-                'complement' => $data['complement'],
+                'complement' => $data['complement'] ?? null,
                 'city' => $data['city'],
                 'state' => $data['state'],
                 'postal_code' => $data['postal_code'],
@@ -38,7 +40,7 @@ class TenantService
                 'domain' => $data['domain'] . '.' . env('TENANCY_CENTRAL_DOMAIN'),
             ]);
 
-
+            DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Tenant creation failed at central DB: ' . $e->getMessage());
@@ -76,21 +78,60 @@ class TenantService
         }
 
         return $tenant;
-
     }
 
-     protected function createTenantDatabase($tenant, $databaseName)
+    public function update(Tenant $tenant, array $data): Tenant
     {
-        $exists = DB::connection('mysql')->select(
-            "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", 
-            [$databaseName]
-        );
+        $databaseName = config('tenancy.database.prefix') . $tenant->id;
 
-        if (empty($exists)) {
-            CreateDatabase::dispatchSync($tenant);
+        try {
+            DB::beginTransaction();
+
+            $tenant->update([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'cnpj' => $data['cnpj'],
+                'street' => $data['street'],
+                'number' => $data['number'],
+                'complement' => $data['complement'] ?? null,
+                'city' => $data['city'],
+                'state' => $data['state'],
+                'postal_code' => $data['postal_code'],
+            ]);
+
+            $domain = $tenant->domains()->first();
+            if ($domain) {
+                $domain->update([
+                    'domain' => $data['domain'] . '.' . env('TENANCY_CENTRAL_DOMAIN'),
+                ]);
+            }
+
+            DB::commit();
+
+            tenancy()->initialize($tenant);
+
+            $tenantDetail = TenantDetail::first();
+            if ($tenantDetail) {
+                $tenantDetail->update([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'cnpj' => $data['cnpj'],
+                    'street' => $data['street'],
+                    'number' => $data['number'],
+                    'complement' => $data['complement'] ?? null,
+                    'city' => $data['city'],
+                    'state' => $data['state'],
+                    'postal_code' => $data['postal_code'],
+                ]);
+            }
+
+            tenancy()->end();
+
+            return $tenant;
+        } catch (\Throwable $e) {
+            Log::error('Tenant update failed: ' . $e->getMessage());
+            throw $e;
         }
-
-        MigrateDatabase::dispatchSync($tenant);
     }
 
     public function delete(Tenant $tenant)
@@ -102,11 +143,24 @@ class TenantService
             $tenant->delete();
 
             DB::statement("DROP DATABASE IF EXISTS `$databaseName`");
-
         } catch (\Exception $e) {
             Log::error('Tenant deletion failed: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+    protected function createTenantDatabase($tenant, $databaseName)
+    {
+        $exists = DB::connection('mysql')->select(
+            "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?",
+            [$databaseName]
+        );
+
+        if (empty($exists)) {
+            CreateDatabase::dispatchSync($tenant);
+        }
+
+        MigrateDatabase::dispatchSync($tenant);
     }
 
     protected function cleanupFailedTenant($tenantId, $databaseName)
@@ -119,5 +173,37 @@ class TenantService
         } catch (\Exception $e) {
             Log::error("Failed to drop database during cleanup: " . $e->getMessage());
         }
+    }
+
+    public function getTenantStatistics(): array
+    {
+        $totalTenants = Tenant::count();
+
+        $tenantsThisMonth = Tenant::whereMonth('created_at', now()->month)->count();
+
+        $recentTenants = Tenant::orderBy('created_at', 'desc')->limit(5)->get();
+
+        $tenantsByMonth = Tenant::select(
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+        ->whereYear('created_at', now()->year)
+        ->groupBy('month')
+        ->pluck('count', 'month')
+        ->toArray();
+
+        $monthlyData = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlyData[$i] = $tenantsByMonth[$i] ?? 0; // Alterado para manter associação com o mês
+        }
+
+        return [
+            'total_tenants' => $totalTenants,
+            'tenants_this_month' => $tenantsThisMonth,
+            'recent_tenants' => $recentTenants,
+            'monthly_data' => [
+                'tenants' => array_values($monthlyData), // Garante array indexado de 0 a 11
+            ],
+        ];
     }
 }

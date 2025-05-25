@@ -29,11 +29,7 @@ Route::middleware(['web'])->domain('academia-multitenant.test')->group(function 
             Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
         });
 
-        Route::prefix('tenants')->group(function () {
-            Route::get('/create', [TenantController::class, 'create'])->name('tenants.create');
-            Route::post('/', [TenantController::class, 'store'])->name('tenants.store');
-                
-        });
+        Route::resource('tenants', TenantController::class)->except(['show']);
     });
 });
 
