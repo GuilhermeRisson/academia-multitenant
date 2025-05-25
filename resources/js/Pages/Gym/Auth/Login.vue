@@ -8,10 +8,9 @@ const form = useForm({
 });
 
 function submit() {
-  form.post('/tenant/admin/login', {
+  form.post('/admin/login', {
     onSuccess: () => form.reset('password'),
     onError: () => {
-      // Opcional: Adicionar feedback visual ou sonoro para erros
       console.log(form.errors);
     },
   });

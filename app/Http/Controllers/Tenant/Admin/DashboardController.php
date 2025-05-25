@@ -17,8 +17,7 @@ class DashboardController extends Controller
     public function index()
     {
         $data = $this->dashboardService->getData();
-
-        return inertia('Admin/Dashboard/Index', [
+        return inertia('Gym/Admin/Dashboard/Index', [
             'data' => $data,
         ]);
     }

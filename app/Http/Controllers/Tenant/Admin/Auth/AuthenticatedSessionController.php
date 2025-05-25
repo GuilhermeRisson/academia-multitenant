@@ -27,19 +27,22 @@ class AuthenticatedSessionController extends Controller
         return Inertia::render('Gym/Auth/Login');
     }
 
-    /**
-     * Processar login.
-     */
     public function store(Request $request): RedirectResponse
     {
-        $this->authService->login($request->only('email', 'password'), $request->boolean('remember'));
+        $credentials = $request->only('email', 'password');
+        $remember = $request->boolean('remember');
 
-        return redirect()->intended(route('admin.dashboard'));
+        if ($this->authService->login($credentials, $remember)) {
+            $tenantDomain = session('tenant_domain', $request->getHost());
+            return redirect()->to("http://{$tenantDomain}/admin/dashboard");
+        }
+
+        throw ValidationException::withMessages([
+            'email' => __('auth.failed'),
+        ]);
     }
 
-    /**
-     * Processar logout.
-     */
+
     public function destroy(Request $request): RedirectResponse
     {
         $this->authService->logout();

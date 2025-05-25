@@ -4,27 +4,23 @@ namespace App\Services\Tenant\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use App\Models\Tenant\User;
 
 class AuthService
 {
     /**
      * Realizar login.
      */
-    public function login(array $credentials, bool $remember = false): void
+    public function login(array $credentials, bool $remember = false): bool
     {
-        $validated = validator($credentials, [
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ])->validate();
-
-        if (!Auth::attempt($validated, $remember)) {
-            throw ValidationException::withMessages([
-                'email' => 'As credenciais estão incorretas.',
-            ]);
+        if (Auth::attempt($credentials, $remember)) {
+            // Garante que o redirecionamento mantenha o subdomínio
+            $tenant = Tenant::current();
+            if ($tenant) {
+                session(['tenant_domain' => $tenant->domain]);
+            }
+            return true;
         }
-
-        session()->regenerate();
+        return false;
     }
 
     /**
