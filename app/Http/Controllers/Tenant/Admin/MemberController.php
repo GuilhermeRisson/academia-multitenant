@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\Tenant\MemberService;
+use App\Models\Tenant\Member;
 
 class MemberController extends Controller
 {
@@ -50,23 +51,27 @@ class MemberController extends Controller
         return redirect()->route('admin.members.index')->with('success', 'Member created successfully!');
     }
 
-    public function show($id)
+    public function show(Request $request)
     {
+        $id = $request->route('member');
         $member = $this->memberService->findById($id);
         return inertia('Gym/Admin/Members/Show', compact('member'));
     }
 
-    public function edit($id)
+    public function edit(Request $request)
     {
+        $id = $request->route('member');
         $member = $this->memberService->findById($id);
         return inertia('Gym/Admin/Members/Edit', compact('member'));
     }
 
     public function update(Request $request, $id)
     {
+        $id = $request->route('member');
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:members,email',
+            'email' => 'nullable|email|unique:members,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'birth_date' => 'nullable|date',
             'street' => 'nullable|string|max:255',
@@ -86,8 +91,10 @@ class MemberController extends Controller
         return redirect()->route('admin.members.index')->with('success', 'Member updated successfully!');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
+        $id = $request->route('member');
+
         $this->memberService->delete($id);
         return redirect()->route('admin.members.index')->with('success', 'Member deleted successfully!');
     }

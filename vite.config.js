@@ -5,10 +5,10 @@ import path from 'path';
 
 export default defineConfig({
   server: {
-    host: '0.0.0.0', // permite acesso externo (do host para o container)
-    port: 5175,      // porta padrão do Vite
+    host: '0.0.0.0',
+    port: 5175,
     hmr: {
-      host: 'localhost', // ou seu IP local, se preferir
+      host: 'localhost',
     },
   },
   plugins: [
@@ -30,5 +30,8 @@ export default defineConfig({
       'ziggy-js': path.resolve(__dirname, 'vendor/tightenco/ziggy/dist/index.js'),
       '@': path.resolve(__dirname, './resources/js'),
     },
+  },
+  optimizeDeps: {
+    include: ['chart.js'],
   },
 });

@@ -8,7 +8,7 @@ class MemberService
 {
     public function list()
     {
-        return Member::orderBy('name')->get();
+        return Member::orderBy('name')->paginate(15);
     }
 
     public function findById(int $id): Member
