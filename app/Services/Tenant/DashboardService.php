@@ -51,7 +51,7 @@ class DashboardService
 
     public function saveLogo(TenantDetail $tenant, UploadedFile $logo): string
     {
-        $path = public_path("logo/{$tenant->id}");
+        $path = public_path("logo/{$tenant->name}");
 
         if (!file_exists($path)) {
             mkdir($path, 0755, true);
@@ -61,7 +61,7 @@ class DashboardService
 
         $logo->move($path, $filename);
 
-        $logoUrl = url("logo/{$tenant->id}/{$filename}");
+        $logoUrl = url("logo/{$tenant->name}/{$filename}");
 
         $tenant->update([
             'logo_url' => $logoUrl
