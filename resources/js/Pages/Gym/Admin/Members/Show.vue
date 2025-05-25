@@ -14,7 +14,7 @@ defineProps({
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Detalhes do Membro</h1>
         <Link
-          href="/tenant/admin/members"
+          href="/admin/members"
           class="text-indigo-600 hover:text-indigo-800"
         >
           Voltar
@@ -62,13 +62,13 @@ defineProps({
 
       <div class="mt-6 flex space-x-4">
         <Link
-          :href="`/tenant/admin/members/${member.id}/edit`"
+          :href="`/admin/members/${member.id}/edit`"
           class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
         >
           Editar
         </Link>
         <button
-          @click="confirm(() => $inertia.delete(`/tenant/admin/members/${member.id}`))"
+          @click="confirm(() => $inertia.delete(`/admin/members/${member.id}`))"
           class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
         >
           Excluir

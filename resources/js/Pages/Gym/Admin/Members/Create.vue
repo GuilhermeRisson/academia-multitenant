@@ -22,7 +22,7 @@ const form = useForm({
 });
 
 function submit() {
-  form.post('/tenant/admin/members', {
+  form.post('/admin/members', {
     onSuccess: () => form.reset(),
   });
 }
@@ -229,8 +229,7 @@ function submit() {
           >
             {{ form.processing ? 'Salvando...' : 'Criar Membro' }}
           </button>
-          <Link
-            href="/tenant/admin/members"
+          <Link href="/admin/members"
             class="flex-1 text-center bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
           >
             Cancelar

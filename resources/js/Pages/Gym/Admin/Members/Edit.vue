@@ -232,7 +232,7 @@ function submit() {
             {{ form.processing ? 'Salvando...' : 'Atualizar Membro' }}
           </button>
           <Link
-            href="/tenant/admin/members"
+            href="/admin/members"
             class="flex-1 text-center bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
           >
             Cancelar

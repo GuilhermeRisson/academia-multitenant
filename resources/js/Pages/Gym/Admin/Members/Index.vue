@@ -1,23 +1,32 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+  import { Head, Link } from '@inertiajs/vue3';
+  import { ref, computed } from 'vue';
+  import { router } from '@inertiajs/vue3';
 
-defineProps({
-  members: Array,
-});
+  const props = defineProps({
+    members: {
+      type: Array,
+      default: () => [], // Fallback para array vazio se members não for passado
+    },
+  });
 
-const search = ref('');
+  const search = ref('');
 
-const filteredMembers = computed(() => {
-  if (!search.value) return members;
-  return members.filter(member =>
-    member.name.toLowerCase().includes(search.value.toLowerCase()) ||
-    (member.email && member.email.toLowerCase().includes(search.value.toLowerCase())) ||
-    (member.city && member.city.toLowerCase().includes(search.value.toLowerCase()))
-  );
-});
+  const filteredMembers = computed(() => {
+    if (!search.value) return props.members || []; // Use props.members instead of just members
+    return (props.members || []).filter(member =>
+      member.name?.toLowerCase().includes(search.value.toLowerCase()) ||
+      (member.email && member.email.toLowerCase().includes(search.value.toLowerCase())) ||
+      (member.city && member.city.toLowerCase().includes(search.value.toLowerCase()))
+    );
+  });
+
+  const confirm = (action) => {
+    if (window.confirm('Tem certeza que deseja excluir este membro?')) {
+      action();
+    }
+  };
 </script>
-
 <template>
   <Head title="Gerenciar Membros - Tenant" />
 
@@ -79,14 +88,14 @@ const filteredMembers = computed(() => {
                   Editar
                 </Link>
                 <button
-                  @click="confirm(() => $inertia.delete(`/tenant/admin/members/${member.id}`))"
+                  @click="confirm(() => router.delete(`/tenant/admin/members/${member.id}`))"
                   class="text-red-600 hover:text-red-800"
                 >
                   Excluir
                 </button>
               </td>
             </tr>
-            <tr v-if="!filteredMembers.length">
+            <tr v-if="!filteredMembers || filteredMembers.length === 0">
               <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">Nenhum membro encontrado.</td>
             </tr>
           </tbody>
@@ -95,15 +104,3 @@ const filteredMembers = computed(() => {
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  methods: {
-    confirm(action) {
-      if (window.confirm('Tem certeza que deseja excluir este membro?')) {
-        action();
-      }
-    },
-  },
-};
-</script>
