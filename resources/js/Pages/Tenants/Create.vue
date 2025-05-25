@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
   tenant: Object, // For editing, if a tenant is passed
@@ -17,6 +17,21 @@ const form = useForm({
   city: props.tenant?.city || '',
   state: props.tenant?.state || '',
   postal_code: props.tenant?.postal_code || '',
+});
+
+watch(() => form.name, (newName) => {
+  if (!props.tenant) { 
+    const slug = newName
+      .toLowerCase()
+      .normalize('NFD') 
+      .replace(/[\u0300-\u036f]/g, '') 
+      .replace(/[^\w\s-]/g, '') 
+      .replace(/\s+/g, '-') 
+      .replace(/-+/g, '-') 
+      .replace(/^-+|-+$/g, '');
+    
+    form.domain = slug;
+  }
 });
 
 function submit() {
@@ -104,10 +119,13 @@ function resetForm() {
             <input
               id="domain"
               v-model="form.domain"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              :class="{ 'border-red-500': form.errors.domain }"
-              placeholder="Digite o domínio (ex: empresa.com)"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-gray-100 cursor-not-allowed"
+              :readonly="!props.tenant"
+              placeholder="Será gerado automaticamente"
             />
+            <p class="mt-1 text-sm text-gray-500">
+              O domínio será usado como subdomínio: <span class="font-mono">{{ form.domain || 'exemplo' }}.seusistema.com</span>
+            </p>
             <div v-if="form.errors.domain" class="text-red-500 text-sm mt-1 flex items-center">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

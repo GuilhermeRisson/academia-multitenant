@@ -21,7 +21,7 @@ class TenantService
         $databaseName = config('tenancy.database.prefix') . $tenantId;
 
         try {
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
             $tenant = Tenant::create([
                 'id' => $tenantId,
@@ -40,9 +40,10 @@ class TenantService
                 'domain' => $data['domain'] . '.' . env('TENANCY_CENTRAL_DOMAIN'),
             ]);
 
-            DB::commit();
+            // DB::commit();
         } catch (\Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
+            
             Log::error('Tenant creation failed at central DB: ' . $e->getMessage());
             throw $e;
         }
@@ -194,7 +195,7 @@ class TenantService
 
         $monthlyData = [];
         for ($i = 1; $i <= 12; $i++) {
-            $monthlyData[$i] = $tenantsByMonth[$i] ?? 0; // Alterado para manter associação com o mês
+            $monthlyData[$i] = $tenantsByMonth[$i] ?? 0;
         }
 
         return [
@@ -202,7 +203,7 @@ class TenantService
             'tenants_this_month' => $tenantsThisMonth,
             'recent_tenants' => $recentTenants,
             'monthly_data' => [
-                'tenants' => array_values($monthlyData), // Garante array indexado de 0 a 11
+                'tenants' => array_values($monthlyData), 
             ],
         ];
     }
