@@ -12,13 +12,11 @@ class TenancyMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Protege domínio principal
         $centralDomains = ['central.seudominio.com', 'localhost', '127.0.0.1'];
         if (in_array($request->getHost(), $centralDomains)) {
             return $next($request);
         }
 
-        // Extrai subdomínio
         $hostParts = explode('.', $request->getHost());
 
         if (count($hostParts) < 3) {
@@ -27,7 +25,6 @@ class TenancyMiddleware
 
         $tenantSubdomain = $hostParts[0];
 
-        // Busca tenant
         $tenant = Tenant::where('name', $tenantSubdomain)->first();
 
         if (!$tenant) {
@@ -38,7 +35,6 @@ class TenancyMiddleware
         //     return response()->view('errors.tenant-inactive', [], 403);
         // }
 
-        // Inicializa tenancy
         app(Tenancy::class)->initialize($tenant);
 
         return $next($request);

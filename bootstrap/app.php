@@ -11,8 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function () {
             Route::middleware([
+                'tenancy',
                 'web',
-                'tenancy' 
             ])
             ->domain('{tenant}.academia-multitenant.test')
             ->group(base_path('routes/tenant.php'));
