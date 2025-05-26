@@ -49,6 +49,8 @@ DB_PORT=3306
 DB_DATABASE=laravel
 DB_USERNAME=laravel
 DB_PASSWORD=laravel
+APP_URL=http://academia-multitenant.test:8080
+TENANCY_CENTRAL_DOMAIN=academia-multitenant.test
 ```
 
 ---
@@ -103,7 +105,7 @@ php artisan migrate --seed
 | app     | Laravel (PHP-FPM)    | 9000           |
 | mysql   | Banco de Dados MySQL | 3307           |
 | nginx   | Servidor Nginx       | 8080           |
-| node    | Node.js              | 5173 (ou dinâmica) |
+| node    | Node.js              | 5175 (ou dinâmica) |
 
 ---
 
