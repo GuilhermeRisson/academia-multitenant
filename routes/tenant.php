@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Tenant\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Tenant\Admin\MemberController;
+use App\Http\Controllers\Tenant\Admin\PlanController;
 use App\Http\Controllers\Tenant\Admin\DashboardController;
+use App\Http\Controllers\Tenant\HomeController;
+
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -31,7 +34,8 @@ Route::middleware([
     Route::view('/empresa-desativada', 'errors.tenant-inactive')->name('tenant.inactive');
 
     // Landing page
-    Route::get('/', fn() => Inertia::render('Gym/LandingPage'))->name('home');
+
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
     // Rotas administrativas
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -49,8 +53,13 @@ Route::middleware([
         // Rotas protegidas
         Route::middleware('auth:tenant')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
             Route::resource('members', MemberController::class);
+            Route::resource('plans', PlanController::class)->names('admin.plans');
+
+
             Route::get('/tenants', [DashboardController::class, 'show'])->name('tenants.show');
+
             Route::post('/tenants/logo', [DashboardController::class, 'updateLogo'])->name('tenants.logo.update');
         });
     });

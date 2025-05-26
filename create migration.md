@@ -8,3 +8,4 @@ Rodar refresh em todos tenants (rollback + migrate):
 
 php artisan tenants:migrate-fresh
 
+php artisan tenants:seed --class=Database\\Seeders\\Tenant\\TenantDatabaseSeeder

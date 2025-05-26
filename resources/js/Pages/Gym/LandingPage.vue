@@ -2,6 +2,18 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+// Define the props for logo_url and company_name
+const props = defineProps({
+  logo_url: {
+    type: String,
+    default: null,
+  },
+  company_name: {
+    type: String,
+    default: 'FitPower Gym',
+  },
+});
+
 const form = useForm({
   name: '',
   email: '',
@@ -23,15 +35,27 @@ function toggleMenu() {
 </script>
 
 <template>
-  <Head title="Bem-vindo à FitPower Gym" />
+  <Head :title="`Bem-vindo à ${company_name}`" />
 
   <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-gray-50 to-gray-100 text-gray-900 font-inter">
     <!-- Header -->
     <header class="bg-gradient-to-r from-indigo-600 to-indigo-800 shadow-lg p-6 sticky top-0 z-20">
       <div class="max-w-7xl mx-auto flex justify-between items-center">
         <div class="flex items-center">
-          <img src="/images/fitpower-logo.png" alt="FitPower Gym Logo" class="h-12 mr-4" />
-          <h1 class="text-2xl font-extrabold text-white">FitPower Gym</h1>
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+            <img
+              v-if="logo_url"
+              :src="logo_url"
+              :alt="`${company_name} Logo`"
+              class="h-12 w-12 object-cover"
+            />
+            <div v-else class="flex items-center justify-center w-full h-full text-gray-400">
+              <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+          <h1 class="text-2xl font-extrabold text-white ml-4">{{ company_name }}</h1>
         </div>
         <!-- Desktop Navigation -->
         <nav class="hidden md:flex space-x-6">
@@ -73,7 +97,7 @@ function toggleMenu() {
         <img src="/images/gym-hero.jpg" alt="Gym Interior" class="w-full h-full object-cover opacity-30" />
       </div>
       <div class="relative max-w-6xl mx-auto text-center px-6">
-        <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 animate-fade-in">Transforme Sua Vida na FitPower Gym</h2>
+        <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 animate-fade-in">Transforme Sua Vida na {{ company_name }}</h2>
         <p class="text-lg sm:text-xl max-w-2xl mx-auto mb-8 animate-fade-in delay-100">
           Junte-se à nossa comunidade e alcance seus objetivos com treinos personalizados, aulas dinâmicas e equipamentos de ponta.
         </p>
@@ -224,7 +248,7 @@ function toggleMenu() {
             <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.41 3.29 8.06 7.55 8.85v-6.27h-2.27v-2.58h2.27v-1.97c0-2.24 1.34-3.47 3.29-3.47.93 0 1.73.07 1.96.1v2.27h-1.34c-1.07 0-1.27.51-1.27 1.25v1.64h2.55l-.33 2.58h-2.22v6.27c4.26-.79 7.55-4.44 7.55-8.85 0-5.52-4.48-10-10-10z"/></svg>
           </a>
         </div>
-        <p class="text-sm">© 2025 FitPower Gym. Todos os direitos reservados.</p>
+        <p class="text-sm">© 2025 {{ company_name }}. Todos os direitos reservados.</p>
         <p class="text-sm mt-2">Powered by <Link href="/" class="underline text-indigo-200 hover:text-white">Gestão de Academias</Link></p>
       </div>
     </footer>

@@ -1,24 +1,22 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Tenant;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\User;
 use Illuminate\Database\Seeder;
+use App\Models\Tenant\User;
 use Illuminate\Support\Facades\Hash;
 
-class UserSeeder extends Seeder
+class UserTenantSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        //
         User::create([
-            'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('123456'),
         ]);
     }
 }
