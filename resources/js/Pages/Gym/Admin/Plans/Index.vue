@@ -5,16 +5,16 @@ import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
   plans: {
-    type: Object,
-    default: () => ({ data: [], links: [] }),
+    type: Array,
+    default: () => [],
   },
 });
 
 const search = ref('');
 
 const filteredPlans = computed(() => {
-  if (!search.value) return props.plans.data || [];
-  return (props.plans.data || []).filter(plan =>
+  if (!search.value) return props.plans;
+  return props.plans.filter(plan =>
     plan.name?.toLowerCase().includes(search.value.toLowerCase()) ||
     (plan.features && plan.features.some(feature => feature.toLowerCase().includes(search.value.toLowerCase())))
   );
@@ -31,6 +31,8 @@ const goToPage = (url) => {
     router.get(url, { search: search.value }, { preserveState: true });
   }
 };
+
+
 </script>
 
 <template>
@@ -179,4 +181,70 @@ input:focus {
 button, a {
   transition: all 0.3s ease;
 }
+
+
+/* Ajustes gerais para o cabeçalho */
+header {
+  padding: 1rem; /* Reduz o padding no mobile */
+}
+
+/* Ajustes para o container interno do cabeçalho */
+header .max-w-7xl {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Estilização do título e descrição */
+header h1 {
+  font-size: 1.5rem; /* Reduz o tamanho da fonte no mobile */
+  line-height: 1.2;
+}
+
+header p {
+  font-size: 0.875rem; /* Reduz a descrição no mobile */
+}
+
+/* Ajustes para os botões */
+header .flex-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Menor espaçamento entre botões */
+}
+
+header .flex-wrap a {
+  width: auto; /* Remove largura total */
+  padding: 0.5rem 1rem; /* Padding mais compacto */
+  text-align: center;
+  font-size: 0.875rem; /* Fonte menor para botões */
+}
+
+/* Media query para telas maiores que 640px */
+@media (min-width: 640px) {
+  header .max-w-7xl {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header .flex-wrap {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  header h1 {
+    font-size: 1.875rem; /* Tamanho original para desktop */
+  }
+
+  header p {
+    font-size: 1rem; /* Tamanho original para desktop */
+  }
+
+  header .flex-wrap a {
+    width: auto;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+}
+
 </style>

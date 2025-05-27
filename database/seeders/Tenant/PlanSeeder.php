@@ -12,19 +12,30 @@ class PlanSeeder extends Seeder
         Plan::create([
             'name' => 'Plano Básico',
             'price' => 29.90,
-            'features' => 'Acesso à academia, aulas básicas',
+            'features' => [
+                'Acesso à academia',
+                'Aulas básicas',
+            ],
         ]);
 
         Plan::create([
             'name' => 'Plano Premium',
             'price' => 59.90,
-            'features' => 'Acesso total + personal trainer',
+            'features' => [
+                'Acesso total',
+                'Personal trainer',
+                'Acesso a aulas premium',
+            ],
         ]);
 
         Plan::create([
             'name' => 'Plano Familiar',
             'price' => 89.90,
-            'features' => 'Acesso total + personal trainer',
+            'features' => [
+                'Acesso total',
+                'Personal trainer',
+                'Permite até 4 membros da mesma família',
+            ],
         ]);
     }
 }

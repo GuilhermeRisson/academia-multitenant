@@ -21,15 +21,6 @@ class PlanController extends Controller
         return inertia('Gym/Admin/Plans/Index', compact('plans'));
     }
 
-    public function show($id)
-    {
-        $plan = $this->planService->find($id);
-        if (!$plan) {
-            abort(404);
-        }
-        return inertia('Gym/Admin/Plans/Show', compact('plan'));
-    }
-
     public function create()
     {
         return inertia('Gym/Admin/Plans/Create');
@@ -40,7 +31,8 @@ class PlanController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'features' => 'nullable|string',
+            'features' => 'nullable|array',
+            'features.*' => 'string',
         ]);
 
         $this->planService->create($data);
@@ -48,8 +40,9 @@ class PlanController extends Controller
         return redirect()->route('admin.plans.index')->with('success', 'Plano criado com sucesso!');
     }
 
-    public function edit($id)
+    public function edit(Request $request)
     {
+        $id = $request->route('plan');
         $plan = $this->planService->find($id);
         if (!$plan) {
             abort(404);
@@ -59,10 +52,12 @@ class PlanController extends Controller
 
     public function update(Request $request, $id)
     {
+        $id = $request->route('plan');
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'features' => 'nullable|string',
+            'features' => 'nullable|array',
+            'features.*' => 'string',
         ]);
 
         $updated = $this->planService->update($id, $data);
@@ -74,8 +69,9 @@ class PlanController extends Controller
         return redirect()->route('admin.plans.index')->with('success', 'Plano atualizado com sucesso!');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
+        $id = $request->route('plan');
         $deleted = $this->planService->delete($id);
 
         if (!$deleted) {
