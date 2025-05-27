@@ -27,10 +27,10 @@ const form = useForm({
 const isMenuOpen = ref(false);
 
 function submitContact() {
-  form.post('/contact', {
-    onSuccess: () => form.reset(),
-    onError: () => { },
-  });
+  // form.post('/contact', {
+  //   onSuccess: () => form.reset(),
+  //   onError: () => { },
+  // });
 }
 
 function toggleMenu() {
@@ -143,7 +143,7 @@ function toggleMenu() {
                 {{ feature }}
               </li>
             </ul>
-            <Link :href="`/admin/plans/${plan.id}/signup`"
+            <Link
               class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300">
             Escolher Plano
             </Link>
