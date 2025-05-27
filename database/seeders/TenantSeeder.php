@@ -15,7 +15,7 @@ class TenantSeeder extends Seeder
         $tenants = [
             [
                 'name' => 'academia1',
-                'email' => 'academia1@alpha.com',
+                'email' => 'academia1@gmail.com',
                 'cnpj' => '12345678000101',
                 'street' => 'Rua A',
                 'number' => '100',
@@ -27,7 +27,7 @@ class TenantSeeder extends Seeder
             ],
             [
                 'name' => 'academia2',
-                'email' => 'academia2@beta.com',
+                'email' => 'academia2@gmail.com',
                 'cnpj' => '98765432000109',
                 'street' => 'Rua B',
                 'number' => '200',

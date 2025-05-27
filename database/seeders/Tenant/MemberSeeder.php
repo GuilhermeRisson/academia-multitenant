@@ -27,6 +27,7 @@ class MemberSeeder extends Seeder
                 'postal_code' => $faker->postcode,
                 'active' => $faker->boolean(80),
                 'registration_date' => $faker->date('Y-m-d', 'now'),
+                'plan_id' => $faker->numberBetween(1, 3),
             ]);
         }
     }

@@ -7,6 +7,7 @@ use App\Services\Tenant\Auth\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Illuminate\Validation\ValidationException;
 use Inertia\Response;
 use App\Models\Tenant\TenantDetail;
 

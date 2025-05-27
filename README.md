@@ -24,7 +24,7 @@ Projeto de gestão de academias utilizando **Laravel + Inertia.js + Vue.js**, co
 
 ---
 
-### 🧠 Passos para rodar o projeto
+## 🧠 Passos para rodar o projeto
 
 ### 1️⃣ Clone o repositório
 
@@ -41,7 +41,7 @@ cd seu-repositorio
 cp .env.example .env
 ```
 
-⚙️ **Edite as configurações do banco no seu `.env` caso necessário:**
+⚙️ **Edite as configurações do banco no seu `.env` caso necessário:**  
 
 ```env
 DB_HOST=mysql
@@ -73,7 +73,7 @@ npm run dev
 
 ---
 
-### 5️⃣ Instale as dependências do Laravel e rode as migrations + seeders
+### 5️⃣ Instale as dependências do Laravel, rode as migrations e o seeder
 
 Acesse o container do Laravel:
 
@@ -81,13 +81,19 @@ Acesse o container do Laravel:
 docker-compose exec app bash
 ```
 
-Execute os comandos:
+Dentro do container, execute os seguintes comandos para instalar as dependências, gerar a chave da aplicação, criar o banco da **central**, rodar as **migrations** e popular com os dados iniciais (**db:seed**):
 
 ```bash
 composer install
 php artisan key:generate
-php artisan migrate --seed
+php artisan migrate
+php artisan db:seed
 ```
+
+Esses comandos irão:  
+- 🔧 Criar o banco da **central**;  
+- 📦 Executar todas as migrations;  
+- 🌱 Popular o banco com o usuário central e os tenants (academia1 e academia2) já configurados.
 
 ---
 
@@ -116,7 +122,7 @@ notepad C:\Windows\System32\drivers\etc\hosts
 
 💡 **Salve o arquivo com permissões de administrador.**
 
----
+--- 
 
 ## 🔑 Acesso ao sistema
 

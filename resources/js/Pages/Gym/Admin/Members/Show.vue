@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 
 defineProps({
-  member: Object,
+  member: Object, // Este objeto agora incluirá o relacionamento 'plan'
 });
 
 const confirm = (action) => {
@@ -124,7 +124,20 @@ const confirm = (action) => {
             </div>
           </div>
 
-        </div>
+          <div class="flex items-start">
+            <span class="flex-shrink-0 w-8 h-8 text-gray-400">
+              <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </span>
+            <div>
+              <span class="block text-sm font-medium text-gray-700">Plano</span>
+              <span class="block text-gray-900">
+                {{ member.plan ? `${member.plan.name} (R$ ${member.plan.price})` : 'Não vinculado' }}
+              </span>
+            </div>
+          </div>
+          </div>
       </div>
 
       <div class="mt-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
@@ -160,7 +173,6 @@ const confirm = (action) => {
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out;
 }
-
 
 header.sticky {
   z-index: 10;
@@ -229,7 +241,6 @@ header .flex-wrap a {
     font-size: 1rem;
   }
 }
-
 
 button, a {
   transition: all 0.3s ease;

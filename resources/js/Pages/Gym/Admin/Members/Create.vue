@@ -1,6 +1,11 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { mask } from 'vue-the-mask';
+import { mask } from 'vue-the-mask'; // Certifique-se de que a máscara está instalada e configurada
+
+// Define as props que a view receberá do controller
+const props = defineProps({
+  plans: Array, // O controller vai passar a lista de planos aqui
+});
 
 const form = useForm({
   name: '',
@@ -17,11 +22,13 @@ const form = useForm({
   active: true,
   registration_date: new Date().toISOString().split('T')[0],
   notes: '',
+  plan_id: '', // Adicionar o campo plan_id ao formulário
 });
 
 function submit() {
   form.post('/admin/members', {
     onSuccess: () => form.reset(),
+    // Para feedback visual de erros, Inertia.js já lida com `form.errors`
   });
 }
 </script>
@@ -30,7 +37,6 @@ function submit() {
   <Head title="Criar Membro - Tenant" />
 
   <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Enhanced Header -->
     <header class="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-xl shadow-xl p-6 mb-8 sticky top-0 z-10">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
         <div class="text-center sm:text-left">
@@ -52,10 +58,8 @@ function submit() {
       </div>
     </header>
 
-    <!-- Form -->
     <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 animate-fade-in">
       <form @submit.prevent="submit" class="space-y-8">
-        <!-- Dados Pessoais -->
         <div class="space-y-6">
           <h2 class="text-xl font-semibold text-gray-800">Dados Pessoais</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -139,7 +143,6 @@ function submit() {
           </div>
         </div>
 
-        <!-- Endereço -->
         <div class="space-y-6">
           <h2 class="text-xl font-semibold text-gray-800">Endereço</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -232,7 +235,6 @@ function submit() {
           </div>
         </div>
 
-        <!-- Status e Data de Registro -->
         <div class="space-y-6">
           <h2 class="text-xl font-semibold text-gray-800">Status e Registro</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -268,10 +270,46 @@ function submit() {
               <div v-if="form.errors.registration_date" class="text-red-500 text-sm mt-1 animate-fade-in">{{ form.errors.registration_date }}</div>
             </div>
           </div>
-
         </div>
 
-        <!-- Form Actions -->
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-800">Plano do Membro</h2>
+          <div class="grid grid-cols-1 gap-6">
+            <div class="relative">
+              <label for="plan_id" class="block text-sm font-medium text-gray-700">Plano</label>
+              <select
+                id="plan_id"
+                v-model="form.plan_id"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                :class="{ 'border-red-500': form.errors.plan_id }"
+              >
+                <option value="">Selecione um plano (Opcional)</option>
+                <option v-for="plan in plans" :key="plan.id" :value="plan.id">
+                  {{ plan.name }} - R$ {{ plan.price }}
+                </option>
+              </select>
+              <div v-if="form.errors.plan_id" class="text-red-500 text-sm mt-1 animate-fade-in">{{ form.errors.plan_id }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-800">Notas Adicionais</h2>
+          <div class="relative">
+            <label for="notes" class="block text-sm font-medium text-gray-700">Notas</label>
+            <textarea
+              id="notes"
+              v-model="form.notes"
+              rows="4"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+              :class="{ 'border-red-500': form.errors.notes }"
+              placeholder="Adicione quaisquer notas importantes sobre o membro..."
+            ></textarea>
+            <div v-if="form.errors.notes" class="text-red-500 text-sm mt-1 animate-fade-in">{{ form.errors.notes }}</div>
+          </div>
+        </div>
+
+
         <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
           <button
             type="submit"

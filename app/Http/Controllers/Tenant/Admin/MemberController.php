@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Tenant\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\Tenant\MemberService;
+use App\Services\Tenant\PlanService;
 use App\Models\Tenant\Member;
 
 class MemberController extends Controller
 {
     protected MemberService $memberService;
+    protected PlanService $planService; 
 
-    public function __construct(MemberService $memberService)
+    public function __construct(MemberService $memberService, PlanService $planService) 
     {
         $this->memberService = $memberService;
+        $this->planService = $planService;
     }
 
     public function index()
@@ -24,7 +27,8 @@ class MemberController extends Controller
 
     public function create()
     {
-        return inertia('Gym/Admin/Members/Create');
+        $plans = $this->planService->all(); 
+        return inertia('Gym/Admin/Members/Create', compact('plans')); 
     }
 
     public function store(Request $request)
@@ -44,6 +48,7 @@ class MemberController extends Controller
             'active' => 'boolean',
             'registration_date' => 'nullable|date',
             'notes' => 'nullable|string',
+            'plan_id' => 'nullable|exists:plans,id',
         ]);
 
         $this->memberService->create($data);
@@ -54,7 +59,7 @@ class MemberController extends Controller
     public function show(Request $request)
     {
         $id = $request->route('member');
-        $member = $this->memberService->findById($id);
+        $member = Member::with('plan')->findOrFail($id);
         return inertia('Gym/Admin/Members/Show', compact('member'));
     }
 
@@ -62,7 +67,8 @@ class MemberController extends Controller
     {
         $id = $request->route('member');
         $member = $this->memberService->findById($id);
-        return inertia('Gym/Admin/Members/Edit', compact('member'));
+        $plans = $this->planService->all();
+        return inertia('Gym/Admin/Members/Edit', compact('member', 'plans'));
     }
 
     public function update(Request $request, $id)
@@ -84,6 +90,7 @@ class MemberController extends Controller
             'active' => 'boolean',
             'registration_date' => 'nullable|date',
             'notes' => 'nullable|string',
+            'plan_id' => 'nullable|exists:plans,id',
         ]);
 
         $this->memberService->update($id, $data);

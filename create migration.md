@@ -10,4 +10,6 @@ php artisan tenants:migrate-fresh
 
 php artisan migrate:fresh
 
-php artisan tenants:seed --class=Database\\Seeders\\Tenant\\TenantDatabaseSeeder
+php artisan tenants:seed
+
+php artisan db:seed

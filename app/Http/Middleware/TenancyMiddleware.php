@@ -31,9 +31,9 @@ class TenancyMiddleware
             throw new NotFoundHttpException('Tenant não encontrado');
         }
 
-        // if (!$tenant->is_active) {
-        //     return response()->view('errors.tenant-inactive', [], 403);
-        // }
+        if (!$tenant->is_active) {
+            return inertia('Errors/TenantInactive')->toResponse(request())->setStatusCode(403);
+        }
 
         app(Tenancy::class)->initialize($tenant);
 
