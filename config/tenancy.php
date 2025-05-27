@@ -149,9 +149,11 @@ return [
      * either using the Redis facade or by injecting it as a dependency.
      */
     'redis' => [
-        'prefix_base' => 'tenant', // Each key in Redis will be prepended by this prefix_base, followed by the tenant id.
-        'prefixed_connections' => [ // Redis connections whose keys are prefixed, to separate one tenant's keys from another.
-            // 'default',
+        'prefix_base' => 'tenant', // Cada chave no Redis será prefixada por este prefix_base, seguido pelo ID do tenant.
+        'prefixed_connections' => [ // Conexões Redis cujas chaves são prefixadas, para separar as chaves de um tenant das de outro.
+            'default',
+            'cache',
+            'session',
         ],
     ],
 

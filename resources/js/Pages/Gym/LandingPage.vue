@@ -107,20 +107,17 @@ function toggleMenu() {
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           <div
             class="group text-center p-6 bg-gray-50 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
-            <img src="{{ asset('imgs/yoga-class.jpg') }}" alt="Yoga" class="w-full h-48 object-cover rounded-md mb-4" />
             <h4 class="text-xl font-semibold mb-2 text-indigo-600">Yoga</h4>
             <p class="text-gray-600">Relaxe e fortaleça seu corpo com nossas aulas de yoga guiadas por instrutores
               experientes.</p>
           </div>
           <div
             class="group text-center p-6 bg-gray-50 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
-            <img src="{{ asset('imgs/crossfit-class.jpg') }}" alt="CrossFit" class="w-full h-48 object-cover rounded-md mb-4" />
             <h4 class="text-xl font-semibold mb-2 text-indigo-600">CrossFit</h4>
             <p class="text-gray-600">Desafie seus limites com treinos intensos e funcionais em grupo.</p>
           </div>
           <div
             class="group text-center p-6 bg-gray-50 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
-            <img src="{{ asset('imgs/spinning-class.jpg') }}" alt="Spinning" class="w-full h-48 object-cover rounded-md mb-4" />
             <h4 class="text-xl font-semibold mb-2 text-indigo-600">Spinning</h4>
             <p class="text-gray-600">Pedale ao ritmo da música em nossas aulas energizantes de spinning.</p>
           </div>
