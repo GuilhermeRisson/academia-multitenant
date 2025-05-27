@@ -55,7 +55,7 @@ Route::middleware([
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
             Route::resource('members', MemberController::class);
-            Route::resource('plans', PlanController::class)->names('admin.plans');
+            Route::resource('plans', PlanController::class)->names('plans');
 
 
             Route::get('/tenants', [DashboardController::class, 'show'])->name('tenants.show');

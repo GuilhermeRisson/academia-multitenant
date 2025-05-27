@@ -12,6 +12,7 @@ const props = defineProps({
   recent_members: Array,
   monthly_data: Object,
 });
+
 const chartRef = ref(null);
 
 onMounted(() => {
@@ -21,7 +22,7 @@ onMounted(() => {
   }
 
   const chartData = props.monthly_data?.members || Array(12).fill(0);
-  
+
   try {
     new Chart(chartRef.value, {
       type: 'line',
@@ -34,59 +35,59 @@ onMounted(() => {
           backgroundColor: 'rgba(79, 70, 229, 0.2)',
           fill: true,
           tension: 0.4,
-        }]
+        }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { 
+          legend: {
             position: 'top',
             labels: {
               font: {
                 size: 14,
-                family: 'Inter, sans-serif'
-              }
-            }
+                family: 'Inter, sans-serif',
+              },
+            },
           },
-          title: { 
-            display: true, 
+          title: {
+            display: true,
             text: 'Crescimento de Membros em ' + new Date().getFullYear(),
             font: {
               size: 18,
               family: 'Inter, sans-serif',
-              weight: '600'
+              weight: '600',
             },
-            padding: 20
+            padding: 20,
           },
           tooltip: {
             enabled: true,
             mode: 'index',
-            intersect: false
-          }
+            intersect: false,
+          },
         },
         scales: {
-          y: { 
+          y: {
             beginAtZero: true,
             ticks: {
               stepSize: 1,
               font: {
-                family: 'Inter, sans-serif'
-              }
-            }
+                family: 'Inter, sans-serif',
+              },
+            },
           },
           x: {
             grid: {
-              display: false
+              display: false,
             },
             ticks: {
               font: {
-                family: 'Inter, sans-serif'
-              }
-            }
-          }
-        }
-      }
+                family: 'Inter, sans-serif',
+              },
+            },
+          },
+        },
+      },
     });
   } catch (error) {
     console.error('Chart initialization error:', error);
@@ -109,7 +110,7 @@ onMounted(() => {
             Visão geral dos membros e atividades recentes
           </p>
         </div>
-        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
           <Link
             href="/admin/tenants"
             class="inline-flex items-center px-4 py-2 bg-white text-indigo-700 font-semibold rounded-lg shadow-md hover:bg-indigo-50 hover:text-indigo-800 transition-all duration-300"
@@ -127,6 +128,12 @@ onMounted(() => {
             class="inline-flex items-center px-4 py-2 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition-all duration-300"
           >
             Cadastrar Novo Membro
+          </Link>
+          <Link
+            href="/admin/plans"
+            class="inline-flex items-center px-4 py-2 bg-white text-indigo-700 font-semibold rounded-lg shadow-md hover:bg-indigo-50 hover:text-indigo-800 transition-all duration-300"
+          >
+            Gerenciar Planos
           </Link>
         </div>
       </div>
@@ -225,7 +232,19 @@ table tr:nth-child(even) {
   background-color: #f8fafc;
 }
 
-button, a {
+button,
+a {
   transition: all 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .flex-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .flex-wrap a {
+    width: 100%;
+    text-align: center;
+  }
 }
 </style>

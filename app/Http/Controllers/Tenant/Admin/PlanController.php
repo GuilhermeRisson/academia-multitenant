@@ -18,7 +18,7 @@ class PlanController extends Controller
     public function index()
     {
         $plans = $this->planService->all();
-        return inertia('Admin/Plans/Index', compact('plans'));
+        return inertia('Gym/Admin/Plans/Index', compact('plans'));
     }
 
     public function show($id)
@@ -27,12 +27,12 @@ class PlanController extends Controller
         if (!$plan) {
             abort(404);
         }
-        return inertia('Admin/Plans/Show', compact('plan'));
+        return inertia('Gym/Admin/Plans/Show', compact('plan'));
     }
 
     public function create()
     {
-        return inertia('Admin/Plans/Create');
+        return inertia('Gym/Admin/Plans/Create');
     }
 
     public function store(Request $request)
@@ -54,7 +54,7 @@ class PlanController extends Controller
         if (!$plan) {
             abort(404);
         }
-        return inertia('Admin/Plans/Edit', compact('plan'));
+        return inertia('Gym/Admin/Plans/Edit', compact('plan'));
     }
 
     public function update(Request $request, $id)
