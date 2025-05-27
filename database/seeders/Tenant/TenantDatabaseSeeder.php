@@ -14,7 +14,7 @@ class TenantDatabaseSeeder extends Seeder
         $this->call([
             PlanSeeder::class,
             MemberSeeder::class,
-            UserTenantSeeder::class,
+            // UserTenantSeeder::class,
         ]);
     }
 }

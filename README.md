@@ -73,15 +73,15 @@ npm run dev
 
 ---
 
-### 5️⃣ Instale as dependências do Laravel e rode as migrations
+### 5️⃣ Instale as dependências do Laravel e rode as migrations + seeders
 
 Acesse o container do Laravel:
 
 ```bash
-docker exec -it laravel-app bash
+docker-compose exec app bash
 ```
 
-Dentro do container, execute:
+Execute os comandos:
 
 ```bash
 composer install
@@ -91,21 +91,60 @@ php artisan migrate --seed
 
 ---
 
-## 🎯 Acesso ao sistema
+## 🏗️ Configuração de Hosts Locais
 
-- 🖥️ **Backend (Laravel via Nginx)**  
-👉 [http://academia-multitenant.test:8080](http://academia-multitenant.test:8080)
+Para que o ambiente multitenant funcione corretamente, é necessário configurar o arquivo de **hosts** do seu sistema.
+
+### 🖥️ Windows
+
+1. Pressione `WIN + R` e digite:
+
+```
+notepad C:\Windows\System32\drivers\etc\hosts
+```
+
+2. Adicione as seguintes linhas no final do arquivo:
+
+```
+# CENTRAL
+127.0.0.1 academia-multitenant.test
+
+# TENANTS
+127.0.0.1 academia1.academia-multitenant.test
+127.0.0.1 academia2.academia-multitenant.test
+```
+
+💡 **Salve o arquivo com permissões de administrador.**
+
+---
+
+## 🔑 Acesso ao sistema
+
+### 🌐 Central
+
+- **URL:** [http://academia-multitenant.test:8080](http://academia-multitenant.test:8080)
+- **Login:** `admin@example.com`
+- **Senha:** `password123`
+
+---
+
+### 🏢 Tenants
+
+| Tenant    | URL                                                             | Login                    | Senha   |
+|------------|------------------------------------------------------------------|--------------------------|---------|
+| Academia 1 | [http://academia1.academia-multitenant.test:8080](http://academia1.academia-multitenant.test:8080) | academia1@gmail.com      | 123456  |
+| Academia 2 | [http://academia2.academia-multitenant.test:8080](http://academia2.academia-multitenant.test:8080) | academia2@gmail.com      | 123456  |
 
 ---
 
 ## 🗂️ Estrutura dos containers
 
-| Serviço | Descrição           | Porta Externa |
-|---------|----------------------|----------------|
-| app     | Laravel (PHP-FPM)    | 9000           |
-| mysql   | Banco de Dados MySQL | 3307           |
-| nginx   | Servidor Nginx       | 8080           |
-| node    | Node.js              | 5175 (ou dinâmica) |
+| Serviço | Descrição           | Porta Externa     |
+|---------|----------------------|-------------------|
+| app     | Laravel (PHP-FPM)    | 9000              |
+| mysql   | Banco de Dados MySQL | 3307              |
+| nginx   | Servidor Nginx       | 8080              |
+| node    | Node.js              | 5175 (ou dinâmica)|
 
 ---
 
@@ -135,6 +174,12 @@ docker exec -it laravel-app bash
 docker exec -it node bash
 ```
 
+✅ Rodar migrations e seeders novamente:
+
+```bash
+docker-compose exec app php artisan migrate:fresh --seed
+```
+
 ---
 
 ## ⚠️ Problemas comuns
@@ -157,4 +202,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## ✨ Desenvolvido por
 
-[@GuilhermeRisson](https://github.com/GuilhermeRisson)  
+[@GuilhermeRisson](https://github.com/GuilhermeRisson)
