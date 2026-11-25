@@ -1,5 +1,7 @@
 # Academia Multitenant
 
+[![Tests](https://github.com/GuilhermeRisson/academia-multitenant/actions/workflows/tests.yml/badge.svg)](https://github.com/GuilhermeRisson/academia-multitenant/actions/workflows/tests.yml)
+
 SaaS de gestão de academias em que **várias academias usam o mesmo sistema, cada uma com seu próprio banco de dados e subdomínio**. Uma área central cadastra as academias; cada academia gerencia seus alunos, planos e identidade visual sem enxergar dados das outras.
 
 **Stack:** Laravel 12 · stancl/tenancy 3 · Inertia.js · Vue.js · Vite · MySQL 8 · Nginx · Docker Compose
@@ -112,9 +114,16 @@ FLUSH PRIVILEGES;
 docker compose exec app php artisan test
 ```
 
+Os testes rodam com SQLite, sem precisar do MySQL, e também rodam no GitHub Actions a cada push. Os principais estão em `tests/Feature/TenantIsolationTest.php` e garantem que:
+
+- cada academia tem seu próprio banco de dados;
+- alunos e planos criados em uma academia não aparecem em outra;
+- o mesmo e-mail pode existir em academias diferentes sem conflito;
+- o administrador de uma academia não consegue fazer login em outra.
+
 ## Próximos passos
 
-- [ ] Testes de isolamento: usuário da academia 1 não acessa dados nem rotas da academia 2
+- [x] Testes de isolamento: usuário da academia 1 não acessa dados nem rotas da academia 2
 - [ ] Testes do fluxo de criação de tenant (banco, migrations e domínio)
 - [ ] Controle de mensalidades e check-in de alunos
 - [ ] Deploy de demonstração online

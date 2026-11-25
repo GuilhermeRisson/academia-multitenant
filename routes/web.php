@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Central\AuthController;
 use App\Http\Controllers\Tenant\DashboardController;
 use App\Http\Controllers\Central\TenantController;
+use App\Http\Controllers\ProfileController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Inertia\Inertia;
