@@ -1,206 +1,120 @@
+# Academia Multitenant
 
-# 🎯 Academia Multitenant
+SaaS de gestão de academias em que **várias academias usam o mesmo sistema, cada uma com seu próprio banco de dados e subdomínio**. Uma área central cadastra as academias; cada academia gerencia seus alunos, planos e identidade visual sem enxergar dados das outras.
 
-Projeto de gestão de academias utilizando **Laravel + Inertia.js + Vue.js**, com ambiente totalmente configurado via **Docker**.
+**Stack:** Laravel 12 · stancl/tenancy 3 · Inertia.js · Vue.js · Vite · MySQL 8 · Nginx · Docker Compose
 
----
+<!-- Coloque aqui 2 ou 3 screenshots ou um GIF: painel central, dashboard de uma academia e cadastro de aluno. -->
 
-## 🚀 Tecnologias
+## Funcionalidades
 
-- ⚙️ Backend: Laravel
-- 🎨 Frontend: Vue.js + Inertia.js + Vite
-- 🐬 Banco de Dados: MySQL
-- 🌐 Servidor Web: Nginx
-- 🐳 Ambiente: Docker + Docker Compose
+**Área central** (`academia-multitenant.test`)
+- Login do administrador da plataforma
+- Cadastro, edição e remoção de academias (tenants), com CNPJ e endereço
+- Ao criar uma academia, o sistema cria o banco dela, roda as migrations e registra o subdomínio
 
----
+**Área de cada academia** (`academia1.academia-multitenant.test`)
+- Login próprio, separado do login central
+- Dashboard
+- Cadastro de alunos e de planos
+- Upload da logo da academia
+- Páginas próprias para academia não encontrada ou desativada
 
-## 🐳 Rodando o projeto com Docker
+## Arquitetura
 
-### 🔥 Pré-requisitos
-
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
-
----
-
-## 🧠 Passos para rodar o projeto
-
-### 1️⃣ Clone o repositório
-
-```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+```mermaid
+flowchart LR
+    U[Navegador] -->|academia1.dominio| N[Nginx]
+    U -->|dominio central| N
+    N --> A[Laravel PHP-FPM]
+    A -->|InitializeTenancyByDomain| T{Qual subdomínio?}
+    T -->|central| C[(Banco central<br/>tenants, domains, users)]
+    T -->|academia1| D1[(tenant_uuid1)]
+    T -->|academia2| D2[(tenant_uuid2)]
 ```
 
----
+1. Toda requisição passa pelo middleware `InitializeTenancyByDomain`, que procura o subdomínio na tabela `domains` do banco central.
+2. Encontrado o tenant, os *bootstrappers* do stancl/tenancy trocam a conexão do banco e isolam também **cache, arquivos e filas** daquela academia.
+3. `PreventAccessFromCentralDomains` impede que as rotas de academia respondam no domínio central, e vice-versa.
+4. Cada lado tem seu próprio guard de autenticação (`auth` no central, `auth:tenant` nas academias), então uma sessão nunca vale no outro contexto.
 
-### 2️⃣ Copie o arquivo de ambiente
+## Decisões técnicas
+
+**Um banco por academia, e não uma coluna `tenant_id`.**
+Com banco separado, um `where` esquecido não vaza dados entre clientes, o backup e a exclusão de um cliente são simples e dá para mover um cliente grande para outro servidor. O custo é mais bancos para administrar e migrations que precisam rodar em todos eles. Para um SaaS com poucas dezenas de academias, o isolamento vale mais que esse custo.
+
+**Identificação por subdomínio.**
+Cada academia ganha um endereço próprio, o que também facilita personalização (logo) e, no futuro, domínio próprio do cliente. A alternativa por caminho (`/academia1/...`) exigiria passar o tenant em todas as rotas.
+
+**IDs em UUID para os tenants.**
+Evitam IDs sequenciais previsíveis e geram nomes de banco únicos (`tenant<uuid>`).
+
+**Criação de tenant em uma camada de serviço (`TenantService`).**
+A lógica de criar o tenant, o domínio e o banco fica fora do controller e é reaproveitada pelo seeder e pela tela de cadastro.
+
+**Inertia + Vue em vez de API + SPA separada.**
+O sistema é um painel administrativo; Inertia dá a experiência de SPA sem manter duas aplicações e duas camadas de autenticação.
+
+## Como rodar
+
+Pré-requisitos: Docker e Docker Compose.
 
 ```bash
+git clone https://github.com/GuilhermeRisson/academia-multitenant.git
+cd academia-multitenant
 cp .env.example .env
+docker compose up -d --build
+
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
 ```
 
-⚙️ **Edite as configurações do banco no seu `.env` caso necessário:**  
+O container `node` já instala as dependências e roda o Vite.
 
-```env
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=laravel
-DB_PASSWORD=laravel
-APP_URL=http://academia-multitenant.test:8080
-TENANCY_CENTRAL_DOMAIN=academia-multitenant.test
-```
-
----
-
-### 3️⃣ Suba os containers com Docker
-
-```bash
-docker-compose up -d --build
-```
-
----
-
-### 4️⃣ Instale as dependências do frontend (Node + Vite)
-
-```bash
-docker exec -it node bash
-npm install
-npm run dev
-```
-
----
-
-### 5️⃣ Instale as dependências do Laravel, rode as migrations e o seeder
-
-Acesse o container do Laravel:
-
-```bash
-docker-compose exec app bash
-```
-
-Dentro do container, execute os seguintes comandos para instalar as dependências, gerar a chave da aplicação, criar o banco da **central**, rodar as **migrations** e popular com os dados iniciais (**db:seed**):
-
-```bash
-composer install
-php artisan key:generate
-php artisan migrate
-php artisan db:seed
-```
-
-Esses comandos irão:  
-- 🔧 Criar o banco da **central**;  
-- 📦 Executar todas as migrations;  
-- 🌱 Popular o banco com o usuário central e os tenants (academia1 e academia2) já configurados.
-
----
-
-## 🏗️ Configuração de Hosts Locais
-
-Para que o ambiente multitenant funcione corretamente, é necessário configurar o arquivo de **hosts** do seu sistema.
-
-### 🖥️ Windows
-
-1. Pressione `WIN + R` e digite:
+Configure o arquivo de hosts (no Windows, `C:\Windows\System32\drivers\etc\hosts`, como administrador; no Linux/macOS, `/etc/hosts`):
 
 ```
-notepad C:\Windows\System32\drivers\etc\hosts
-```
-
-2. Adicione as seguintes linhas no final do arquivo:
-
-```
-# CENTRAL
 127.0.0.1 academia-multitenant.test
-
-# TENANTS
 127.0.0.1 academia1.academia-multitenant.test
 127.0.0.1 academia2.academia-multitenant.test
 ```
 
-💡 **Salve o arquivo com permissões de administrador.**
+### Acessos de demonstração (dados fictícios do seeder)
 
---- 
+| Área | URL | Login | Senha |
+|---|---|---|---|
+| Central | http://academia-multitenant.test:8080 | admin@example.com | password123 |
+| Academia 1 | http://academia1.academia-multitenant.test:8080 | academia1@gmail.com | 123456 |
+| Academia 2 | http://academia2.academia-multitenant.test:8080 | academia2@gmail.com | 123456 |
 
-## 🔑 Acesso ao sistema
+### Containers
 
-### 🌐 Central
+| Serviço | Função | Porta |
+|---|---|---|
+| app | Laravel (PHP-FPM) | 9000 |
+| mysql | MySQL 8 | 3307 |
+| nginx | Servidor web | 8080 |
+| node | Vite | 5175 |
 
-- **URL:** [http://academia-multitenant.test:8080](http://academia-multitenant.test:8080)
-- **Login:** `admin@example.com`
-- **Senha:** `password123`
+### Problema comum
 
----
-
-### 🏢 Tenants
-
-| Tenant    | URL                                                             | Login                    | Senha   |
-|------------|------------------------------------------------------------------|--------------------------|---------|
-| Academia 1 | [http://academia1.academia-multitenant.test:8080](http://academia1.academia-multitenant.test:8080) | academia1@gmail.com      | 123456  |
-| Academia 2 | [http://academia2.academia-multitenant.test:8080](http://academia2.academia-multitenant.test:8080) | academia2@gmail.com      | 123456  |
-
----
-
-## 🗂️ Estrutura dos containers
-
-| Serviço | Descrição           | Porta Externa     |
-|---------|----------------------|-------------------|
-| app     | Laravel (PHP-FPM)    | 9000              |
-| mysql   | Banco de Dados MySQL | 3307              |
-| nginx   | Servidor Nginx       | 8080              |
-| node    | Node.js              | 5175 (ou dinâmica)|
-
----
-
-## 🚧 Comandos úteis
-
-✅ Subir os containers:
-
-```bash
-docker-compose up -d --build
-```
-
-✅ Derrubar os containers:
-
-```bash
-docker-compose down -v
-```
-
-✅ Acessar o container do Laravel:
-
-```bash
-docker exec -it laravel-app bash
-```
-
-✅ Acessar o container do Node:
-
-```bash
-docker exec -it node bash
-```
-
-✅ Rodar migrations e seeders novamente:
-
-```bash
-docker-compose exec app php artisan migrate:fresh --seed
-```
-
----
-
-## ⚠️ Problemas comuns
-
-- 🔑 **Erro de permissão no banco ao criar tenants:**  
-É necessário garantir que o usuário `laravel` no MySQL tenha permissões suficientes para criar e excluir bancos. Rode dentro do container mysql:
+Se a criação de academias falhar por permissão, o usuário do MySQL precisa poder criar bancos:
 
 ```sql
 GRANT ALL PRIVILEGES ON *.* TO 'laravel'@'%';
 FLUSH PRIVILEGES;
 ```
 
----
+## Testes
 
+```bash
+docker compose exec app php artisan test
+```
 
-## ✨ Desenvolvido por
+## Próximos passos
 
-[@GuilhermeRisson](https://github.com/GuilhermeRisson)
+- [ ] Testes de isolamento: usuário da academia 1 não acessa dados nem rotas da academia 2
+- [ ] Testes do fluxo de criação de tenant (banco, migrations e domínio)
+- [ ] Controle de mensalidades e check-in de alunos
+- [ ] Deploy de demonstração online
